@@ -3,11 +3,22 @@ class SubmissionsController < ApplicationController
     before_action :find_submission, only: [:show, :update, :destroy]
 
     def index
+        page = params[:page].to_i || 1
+        per_page = params[:per_page].to_i || 6
+
+        if !valid_page?(page) || !valid_per_page?(per_page)
+            render json: { error: 'Invalid page or perPage parameter' }, status: 400
+            return
+        end
+
         @submissions = @current_user.submissions
-        s3 = Aws::S3::Client.new(
-            region: ENV['AWS_REGION'], access_key_id: ENV['AWS_ACCESS_KEY_ID'], secret_access_key: ENV['AWS_SECRET_ACCESS_KEY'])
-        @submissions.each do |submission|
-            submission.image_url = 'heheeee'
+                                    .limit(per_page)
+                                    .offset((page - 1) * per_page)
+                                    .to_a
+        @submissions.map do |submission|
+            submission.image_url = submission.presigned_image_url
+            submission.word = 'test'
+            submission
         end
         render json: @submissions, status: 200
     end
@@ -37,5 +48,11 @@ class SubmissionsController < ApplicationController
         end
         def submission_params
             params.require(:submission).permit(:image_url, :note, :word)
+        end
+        def valid_page?(page)
+            page.is_a?(Integer) && page > 0
+        end
+        def valid_per_page?(per_page)
+            per_page.is_a?(Integer) && per_page > 0
         end
 end
