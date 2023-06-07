@@ -6,21 +6,20 @@ class SubmissionsController < ApplicationController
         page = params[:page].to_i || 1
         per_page = params[:per_page].to_i || 6
 
-        if !valid_page?(page) || !valid_per_page?(per_page)
-            render json: { error: 'Invalid page or perPage parameter' }, status: 400
-            return
-        end
-
-        @submissions = @current_user.submissions
+        if valid_page?(page) && valid_per_page?(per_page)
+            @submissions = @current_user.submissions
                                     .limit(per_page)
                                     .offset((page - 1) * per_page)
                                     .to_a
-        @submissions.map do |submission|
-            submission.image_url = submission.presigned_image_url
-            submission.word = 'test'
-            submission
-        end
-        render json: @submissions, status: 200
+            @submissions.map do |submission|
+                submission.image_url = submission.presigned_image_url
+                submission.word = 'test'
+                submission
+            end
+            render json: @submissions, status: 200
+        else
+            render json: { error: 'Invalid page or perPage parameter' }, status: 400
+        end        
     end
 
     def show
