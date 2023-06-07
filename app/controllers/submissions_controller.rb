@@ -4,6 +4,11 @@ class SubmissionsController < ApplicationController
 
     def index
         @submissions = @current_user.submissions
+        s3 = Aws::S3::Client.new(
+            region: ENV['AWS_REGION'], access_key_id: ENV['AWS_ACCESS_KEY_ID'], secret_access_key: ENV['AWS_SECRET_ACCESS_KEY'])
+        @submissions.each do |submission|
+            submission.image_url = 'heheeee'
+        end
         render json: @submissions, status: 200
     end
 
@@ -16,13 +21,13 @@ class SubmissionsController < ApplicationController
         if @submission.save
             render json: @submission, status: 201
         else
-            render json: { errors: @submission.errors.full_messages }, status: 503
+            render json: { error: @submission.errors.full_messages }, status: 503
         end
     end
 
     def destroy
         unless @submission.destroy
-            render json: { errors: @submission.errors.full_messages }, status: 503
+            render json: { error: @submission.errors.full_messages }, status: 503
         end
     end
 
@@ -31,6 +36,6 @@ class SubmissionsController < ApplicationController
             @submission = Submission.find(params[:id])
         end
         def submission_params
-            params.require(:submission).permit(:image_url, :note)
+            params.require(:submission).permit(:image_url, :note, :word)
         end
 end

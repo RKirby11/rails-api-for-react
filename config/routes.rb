@@ -6,4 +6,5 @@ Rails.application.routes.draw do
   end
   
   get '/*a', to: 'application#not_found'
+  post '/*a', to: 'application#not_found'
 end

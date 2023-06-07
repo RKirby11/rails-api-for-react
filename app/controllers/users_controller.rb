@@ -16,19 +16,19 @@ class UsersController < ApplicationController
         if @user.save
             render json: @user, status: 201
         else
-            render json: { errors: @user.errors.full_messages }, status: 503
+            render json: { error: @user.errors.full_messages }, status: 503
         end
     end
 
     def update
         unless @current_user.update(user_params)
-            render json: { errors: @user.errors.full_messages }, status: 503
+            render json: { error: @user.errors.full_messages }, status: 503
         end
     end
 
     def destroy
         unless @current_user.destroy
-            render json: { errors: @user.errors.full_messages }, status: 503
+            render json: { error: @user.errors.full_messages }, status: 503
         end
     end
 

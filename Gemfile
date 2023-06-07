@@ -38,8 +38,12 @@ gem "rack-cors"
 
 # Use JWT gem for token-based authentication
 gem 'jwt'
+
 # Use ActiveModel has_secure_password
 gem 'bcrypt', '~> 3.1.7'
+
+# Use AWS S3 SDK
+gem 'aws-sdk-s3'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
