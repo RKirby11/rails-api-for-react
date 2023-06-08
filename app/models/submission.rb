@@ -1,6 +1,6 @@
 class Submission < ApplicationRecord
   belongs_to :user
-  belongs_to :daily_word
+  belongs_to :daily_word, foreign_key: :daily_word_id
 
   validates :image_url, presence: true, uniqueness: true
   validates :note, presence: true

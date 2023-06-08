@@ -8,12 +8,18 @@ class SubmissionsController < ApplicationController
 
         if valid_page?(page) && valid_per_page?(per_page)
             @submissions = @current_user.submissions
+                                    .includes(:daily_word)
                                     .limit(per_page)
                                     .offset((page - 1) * per_page)
                                     .to_a
-            @submissions.map do |submission|
-                submission.image_url = submission.presigned_image_url
-                submission
+
+            @submissions = @submissions.map do |submission|
+                {
+                    'image_url': submission.presigned_image_url,
+                    'word': submission.daily_word.word,
+                    'date': submission.daily_word.date,
+                    'note': submission.note
+                }
             end
             render json: @submissions, status: 200
         else
