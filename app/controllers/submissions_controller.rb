@@ -13,7 +13,6 @@ class SubmissionsController < ApplicationController
                                     .to_a
             @submissions.map do |submission|
                 submission.image_url = submission.presigned_image_url
-                submission.word = 'test'
                 submission
             end
             render json: @submissions, status: 200
@@ -27,7 +26,8 @@ class SubmissionsController < ApplicationController
     end
 
     def create
-        @submission = @current_user.submissions.build(submission_params.merge(:date => Date.today))
+        @todays_word = DailyWord.where(date: Date.today.beginning_of_day).first
+        @submission = @current_user.submissions.build(submission_params.merge(:daily_word => @todays_word))
         if @submission.save
             render json: @submission, status: 201
         else
@@ -46,7 +46,7 @@ class SubmissionsController < ApplicationController
             @submission = Submission.find(params[:id])
         end
         def submission_params
-            params.require(:submission).permit(:image_url, :note, :word)
+            params.require(:submission).permit(:image_url, :note)
         end
         def valid_page?(page)
             page.is_a?(Integer) && page > 0

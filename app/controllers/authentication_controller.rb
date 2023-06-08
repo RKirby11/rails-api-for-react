@@ -6,12 +6,21 @@ class AuthenticationController < ApplicationController
         @user = User.find_by_email(params[:email])
         if @user&.authenticate(params[:password])
             token = jwt_encode({user_id: @user.id})
-            time = Time.now + 24.hours.to_i
+            time = Date.tomorrow.midnight
+
+            todays_word = DailyWord.where(date: Date.today.beginning_of_day).first
+            if ! todays_word.present?
+                todays_word = DailyWord.create(word: Faker::Verb.base, date: Date.today.beginning_of_day)
+            end
+
             render json: { 
-                token: token,
-                expiry: time.strftime("%m-%d-%Y %H:%M"),
-                username: @user.user_name
-                }, status: :ok
+                jwt: {
+                    token: token,
+                    expiry: time.strftime("%m-%d-%Y %H:%M")
+                },
+                username: @user.user_name,
+                todays_word: todays_word.word
+            }, status: :ok
         else
             render json: { 
                 error: "Authentication failed - please check your credentials and try again." 

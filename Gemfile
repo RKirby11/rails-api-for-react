@@ -45,6 +45,8 @@ gem 'bcrypt', '~> 3.1.7'
 # Use AWS S3 SDK
 gem 'aws-sdk-s3'
 
+gem 'faker'
+
 gem 'dotenv-rails', groups: [:development, :test]
 
 group :development, :test do
