@@ -1,24 +1,9 @@
-# README
+# Rails API (Corresponds with react-learning repository)
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+This API was built as part of a personal project (see https://github.com/RKirby11/react-learning) to manage the user authentication and database management. 
 
-Things you may want to cover:
+The API handles users signing up and logging in (providing a JWT token to authenticate on the front end), storing and delivering an image url of their uploaded work (utilising AWS S3 for file storage), and producing a random word each day to inspire the users.
 
-* Ruby version
+This project was focused on learning Rails and NextJS so is not complete or deployed yet.
 
-* System dependencies
 
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
