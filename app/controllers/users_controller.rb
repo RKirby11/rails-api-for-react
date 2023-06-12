@@ -14,6 +14,8 @@ class UsersController < ApplicationController
     def create
         @user = User.create(user_params)
         if @user.save
+            puts @user.verification_token
+            UserMailer.email_verification(@user).deliver_now
             render json: @user, status: 201
         else
             render json: { error: @user.errors.full_messages }, status: 503
@@ -34,6 +36,6 @@ class UsersController < ApplicationController
 
     private
         def user_params
-            params.permit(:user_name, :email, :password)
+            params.permit(:user_name, :email, :password, :password_confirmation)
         end
 end

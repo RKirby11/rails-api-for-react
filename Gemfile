@@ -47,6 +47,8 @@ gem 'aws-sdk-s3'
 
 gem 'faker'
 
+gem 'mailtrap'
+
 gem 'dotenv-rails', groups: [:development, :test]
 
 group :development, :test do

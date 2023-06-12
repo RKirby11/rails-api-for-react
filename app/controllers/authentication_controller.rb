@@ -1,10 +1,15 @@
 class AuthenticationController < ApplicationController
 
-    skip_before_action :authenticate_user
+    skip_before_action :authenticate_user , only: [:login, :validate_email]
 
     def login
         @user = User.find_by_email(params[:email])
-        if @user&.authenticate(params[:password])
+
+        if params[:email_verification_code] && @user&.verification_token == params[:email_verification_code]
+            @user.verify_email
+        end
+
+        if @user&.authenticate(params[:password]) && @user.verified
             token = jwt_encode({user_id: @user.id})
             time = Date.tomorrow.midnight
 
@@ -22,9 +27,19 @@ class AuthenticationController < ApplicationController
                 todays_word: todays_word.word
             }, status: :ok
         else
+            if @user && ! @user.verified
+                error = "Please check your emails for a verification link in order to sign in."
+            else
+                error = "Authentication failed - please check your credentials and try again."
+            end
             render json: { 
-                error: "Authentication failed - please check your credentials and try again." 
-                }, status: :unauthorized
+                error: error
+            }, status: :unauthorized
         end
+    end
+
+    def send_verification_email
+        UserMailer.email_verification(@current_user).deliver_now
+        render json: { message: "Verification email sent." }, status: 200
     end
 end

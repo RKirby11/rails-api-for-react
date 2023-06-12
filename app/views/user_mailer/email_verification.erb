@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <p>Hi <%= @user.user_name %>!</p>
+    <p>Thanks for registering! Please click the link below to verify your email:</p>
+    <a href="http://localhost:8000/login?token=<%= @user.verification_token %>">Verify Email</a>
+  </body>
+</html>

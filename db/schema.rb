@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_09_163944) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_12_151637) do
   create_table "daily_words", force: :cascade do |t|
     t.string "word"
     t.datetime "date"
@@ -35,6 +35,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_09_163944) do
     t.string "password_digest"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "verified"
+    t.string "verification_token"
+    t.index ["verification_token"], name: "index_users_on_verification_token"
   end
 
   add_foreign_key "submissions", "daily_words"
