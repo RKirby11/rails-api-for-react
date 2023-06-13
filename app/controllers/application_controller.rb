@@ -4,9 +4,10 @@ class ApplicationController < ActionController::API
     include JwtToken
     
     before_action :authenticate_user
+    skip_before_action :authenticate_user , only: [:not_found]
 
     def not_found
-        render json: { error: 'not_found' }
+        render json: { error: 'not_found' }, status: :not_found
     end
 
     private

@@ -14,7 +14,6 @@ class UsersController < ApplicationController
     def create
         @user = User.create(user_params)
         if @user.save
-            puts @user.verification_token
             UserMailer.email_verification(@user).deliver_now
             render json: @user, status: 201
         else

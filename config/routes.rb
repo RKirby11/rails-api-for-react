@@ -1,7 +1,9 @@
 Rails.application.routes.draw do
   post "/auth/login", to: "authentication#login"
-  get "/auth/verification_email", to: "authentication#send_verification_email"
-  get "/auth/validate_email/:verification_token", to: "authentication#validate_email", as: :validate_email
+  post "/auth/resend_verification", to: "authentication#send_verification_email"
+  post "/auth/request_password_reset", to: "authentication#send_password_reset_email"
+  post "/auth/reset_password", to: "authentication#reset_password"
+  
   get "/dailyword", to: "daily_word#index"
 
   resources :users, param: :user_name do
