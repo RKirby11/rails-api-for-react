@@ -25,7 +25,9 @@ class AuthenticationController < ApplicationController
                 },
                 username: @user.user_name,
                 todays_word: todays_word.word
+                avatar_url: @user.presigned_avatar_url
             }, status: :ok
+
         else
             if @user && ! @user.verified && params[:email_verification_code]
                 error = "The verification link used has expired."
@@ -46,9 +48,9 @@ class AuthenticationController < ApplicationController
             @user.generate_verification_token
             @user.save(validate: false)
             UserMailer.email_verification(@user).deliver_now
-            render json: { message: "Verification email sent." }, status: 200
+            render json: { message: "Verification email sent." }, status: :ok
         else
-            render json: { error: "No account with that email address exists." }, status: 404
+            render json: { error: "No account with that email address exists." }, status: :not_found
         end
     end
 
@@ -57,9 +59,9 @@ class AuthenticationController < ApplicationController
         if @user.present?
             @user.generate_password_reset_token
             UserMailer.password_reset(@user).deliver_now
-            render json: { message: "Password reset link sent." }, status: 200
+            render json: { message: "Password reset link sent." }, status: :ok
         else
-            render json: { error: "No account with that email address exists." }, status: 404
+            render json: { error: "No account with that email address exists." }, status: :not_found
         end
     end
 
@@ -68,12 +70,12 @@ class AuthenticationController < ApplicationController
         if @user.present?
             begin 
                 @user.reset_password(params[:password_reset_token], params[:password], params[:password_confirmation]) 
-                render json: { message: "Password reset." }, status: 200
+                render json: { message: "Password reset." }, status: :ok
             rescue => e
-                render json: { error: e.message }, status: 404
+                render json: { error: e.message }, status: :bad_request
             end
         else
-            render json: { error: "Invalid password reset token." }, status: 404
+            render json: { error: "Invalid password reset token." }, status: :bad_request
         end
     end
 end

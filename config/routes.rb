@@ -6,7 +6,12 @@ Rails.application.routes.draw do
   
   get "/dailyword", to: "daily_word#index"
 
-  resources :users, param: :user_name do
+  resources :users, param: :user_name, except: [:update, :show] do
+    member do
+      patch :update_avatar
+      patch :update_bio
+      get :show_bio
+    end
     resources :submissions
   end
   

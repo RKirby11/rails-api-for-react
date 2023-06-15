@@ -10,10 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_13_142544) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_15_142223) do
   create_table "daily_words", force: :cascade do |t|
     t.string "word"
     t.datetime "date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "friendships", force: :cascade do |t|
+    t.integer "requester"
+    t.integer "responder"
+    t.boolean "accepted"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -40,6 +48,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_13_142544) do
     t.datetime "verification_expiry"
     t.string "password_reset_token"
     t.datetime "password_reset_expiry"
+    t.string "avatar_url"
+    t.string "bio"
     t.index ["password_reset_token"], name: "index_users_on_password_reset_token"
     t.index ["verification_token"], name: "index_users_on_verification_token"
   end

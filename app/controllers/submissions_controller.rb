@@ -21,9 +21,9 @@ class SubmissionsController < ApplicationController
                     'note': submission.note
                 }
             end
-            render json: @submissions, status: 200
+            render json: @submissions, status: :ok
         else
-            render json: { error: 'Invalid page or perPage parameter' }, status: 400
+            render json: { error: 'Invalid page or perPage parameter' }, status: :bad_request
         end        
     end
 
@@ -32,31 +32,38 @@ class SubmissionsController < ApplicationController
     end
 
     def create
-        @todays_word = DailyWord.where(date: Date.today.beginning_of_day).first
+        @todays_word = DailyWord.find_by(date: Date.today.beginning_of_day)
         @submission = @current_user.submissions.build(submission_params.merge(:daily_word => @todays_word))
         if @submission.save
-            render json: @submission, status: 201
+            render json: @submission, status: :created
         else
-            render json: { error: @submission.errors.full_messages }, status: 503
+            render json: { error: @submission.errors.full_messages }, status: :service_unavailable
         end
     end
 
     def destroy
-        unless @submission.destroy
-            render json: { error: @submission.errors.full_messages }, status: 503
+        if @submission.destroy
+            render json: { message: "Submission deleted" }, status: :no_content
+        else
+            render json: { error: @submission.errors.full_messages }, status: :service_unavailable
         end
     end
 
     private
         def find_submission
             @submission = Submission.find(params[:id])
+        rescue ActiveRecord::RecordNotFound => e
+            render json: { error: 'Submission not found' }, status: :not_found
         end
+
         def submission_params
             params.require(:submission).permit(:image_url, :note)
         end
+
         def valid_page?(page)
             page.is_a?(Integer) && page > 0
         end
+
         def valid_per_page?(per_page)
             per_page.is_a?(Integer) && per_page > 0
         end
