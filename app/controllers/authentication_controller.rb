@@ -11,7 +11,7 @@ class AuthenticationController < ApplicationController
 
         if @user&.authenticate(params[:password]) && @user.verified
             token = jwt_encode({user_id: @user.id})
-            time = Date.tomorrow.midnight
+            time = Date.today.end_of_day
 
             todays_word = DailyWord.where(date: Date.today.beginning_of_day).first
             if ! todays_word.present?
@@ -24,7 +24,7 @@ class AuthenticationController < ApplicationController
                     expiry: time.strftime("%m-%d-%Y %H:%M")
                 },
                 username: @user.user_name,
-                todays_word: todays_word.word
+                todays_word: todays_word.word,
                 avatar_url: @user.presigned_avatar_url
             }, status: :ok
 

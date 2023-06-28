@@ -19,8 +19,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_15_142223) do
   end
 
   create_table "friendships", force: :cascade do |t|
-    t.integer "requester"
-    t.integer "responder"
+    t.integer "requester_id"
+    t.integer "responder_id"
     t.boolean "accepted"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

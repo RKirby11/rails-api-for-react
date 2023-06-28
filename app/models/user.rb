@@ -76,9 +76,9 @@ class User < ApplicationRecord
     end
 
     def get_friends()
-        friendships = Friendship.where(requester_id: id, accepted: true).or(Friendship.where(responder_id: id, accepted: true))
+        friendships = Friendship.where(requester: id, accepted: true).or(Friendship.where(responder: id, accepted: true))
         friendships = friendships.map do |friendship|
-            if friendship.requester_id === id
+            if friendship.requester === id
                 {
                     'username': friendship.responder.user_name,
                     'avatar': friendship.responder.presigned_avatar_url
@@ -94,7 +94,7 @@ class User < ApplicationRecord
     end
 
     def get_friend_requests()
-        friend_requests = Friendship.where(responder_id: id, accepted: false)
+        friend_requests = Friendship.where(responder: id, accepted: false)
         friend_requests = friend_requests.map do |friend_request|
             {
                 'id': friend_request.id,
@@ -103,5 +103,18 @@ class User < ApplicationRecord
             }
         end
         return friend_requests
+    end
+
+    def get_friendship_status(user_id)
+        friendship = Friendship.where(requester: id, responder: user_id).or(Friendship.where(requester: user_id, responder: id)).first
+        if friendship.nil?
+            return 'none'
+        elsif friendship.accepted
+            return 'friends'
+        elsif friendship.requester === id
+            return 'sent'
+        else
+            return 'received'
+        end
     end
 end

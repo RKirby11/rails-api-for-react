@@ -11,7 +11,8 @@ class FriendshipsController < ApplicationController
     end
 
     def create
-        @friendship = Friendship.new(friendship_create_params.merge(accepted: false, requester_id: @current_user.id))
+        @responder = User.find_by_user_name(params[:responder_name])
+        @friendship = Friendship.new(requester: @current_user.id, responder: @responder.id, accepted: false)
         if @friendship.save
             render json: { message: 'Friend request sent!'}, status: :created
         else
@@ -32,7 +33,7 @@ class FriendshipsController < ApplicationController
 
     def destroy
         @friendship = Friendship.find(friendship_update_params[:friendship_id])
-        if @friendship.present? && (@friendship.requester_id === @current_user.id || @friendship.responder_id === @current_user.id)
+        if @friendship.present? && (@friendship.requester === @current_user.id || @friendship.responder === @current_user.id)
             @friendship.destroy
             render json: { message: 'Friendship deleted!'}, status: :ok
         else
@@ -41,10 +42,6 @@ class FriendshipsController < ApplicationController
     end
 
     private
-        def friendship_create_params
-            params.permit(:responder_id)
-        end
-
         def friendship_update_params
             params.permit(:friendship_id)
         end

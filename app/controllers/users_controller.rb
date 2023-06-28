@@ -1,13 +1,22 @@
 class UsersController < ApplicationController
 
     skip_before_action :authenticate_user, only: [:create]
+    before_action :find_user, only: [:show]
 
     def index
-        //TODO
+        @users = User.where("user_name like ?", "%#{params[:username]}").where.not(id: @current_user).limit(6)
+        @users = @users.map do |user| {
+            'user_name': user.user_name,
+            'avatar_url': user.presigned_avatar_url,
+            'id': user.id,
+            'friendship_status': @current_user.get_friendship_status(user.id)
+        }
+        end
+        render json: { users: @users }, status: :ok
     end
 
-    def show_bio
-        render json: { bio: @current_user.bio }, status: :ok
+    def show
+        render json: { avatar_url: @user.presigned_avatar_url, bio: @user.bio, is_current_user: @user === @current_user }, status: :ok
     end
 
     def create
@@ -43,6 +52,10 @@ class UsersController < ApplicationController
     end
 
     private
+        def find_user
+            @user = User.find_by_user_name(params[:user_name])
+        end
+
         def create_user_params
             params.permit(:user_name, :email, :password, :password_confirmation)
         end
@@ -53,5 +66,9 @@ class UsersController < ApplicationController
 
         def bio_param
             params.permit(:bio)
+        end
+
+        def search_param
+            params.permit(:query)
         end
 end
