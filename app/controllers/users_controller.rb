@@ -9,14 +9,14 @@ class UsersController < ApplicationController
             'user_name': user.user_name,
             'avatar_url': user.presigned_avatar_url,
             'id': user.id,
-            'friendship_status': @current_user.get_friendship_status(user.id)
+            'relationship': @current_user.get_friendship_status(user.id)
         }
         end
         render json: { users: @users }, status: :ok
     end
 
     def show
-        render json: { avatar_url: @user.presigned_avatar_url, bio: @user.bio, is_current_user: @user === @current_user }, status: :ok
+        render json: { avatar_url: @user.presigned_avatar_url, bio: @user.bio, relationship: @current_user.get_friendship_status(@user.id) }, status: :ok
     end
 
     def create

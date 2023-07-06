@@ -13,6 +13,8 @@ Rails.application.routes.draw do
     end
     resources :submissions
   end
+
+  resources :friendships, except: [:show]
   
   get '/*a', to: 'application#not_found'
   post '/*a', to: 'application#not_found'

@@ -4,7 +4,7 @@ class Friendship < ApplicationRecord
 
     validates :requester_id, presence: true
     validates :responder_id, presence: true
-    validates :accepted, presence: true, inclusion: { in: [true, false] }
+    validates :accepted, inclusion: { in: [true, false] }
     validate :validate_requester_existence
     validate :validate_responder_existence
     validate :unique_friendship

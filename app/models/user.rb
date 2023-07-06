@@ -62,10 +62,10 @@ class User < ApplicationRecord
     end
 
     def presigned_avatar_url
-        if avatar_url.nil?
+        if self.avatar_url.nil?
             return nil
         else
-            obj = Aws::S3::Resource.new.bucket(ENV['S3_BUCKET_NAME']).object(avatar_url)
+            obj = Aws::S3::Resource.new.bucket(ENV['S3_BUCKET_NAME']).object(self.avatar_url)
             return obj.presigned_url(:get, expires_in: 86400)
         end
     end
@@ -76,9 +76,9 @@ class User < ApplicationRecord
     end
 
     def get_friends()
-        friendships = Friendship.where(requester: id, accepted: true).or(Friendship.where(responder: id, accepted: true))
+        friendships = Friendship.where(requester: self.id, accepted: true).or(Friendship.where(responder: self.id, accepted: true))
         friendships = friendships.map do |friendship|
-            if friendship.requester === id
+            if friendship.requester.id === self.id
                 {
                     'username': friendship.responder.user_name,
                     'avatar': friendship.responder.presigned_avatar_url
@@ -94,7 +94,7 @@ class User < ApplicationRecord
     end
 
     def get_friend_requests()
-        friend_requests = Friendship.where(responder: id, accepted: false)
+        friend_requests = Friendship.where(responder: self.id, accepted: false)
         friend_requests = friend_requests.map do |friend_request|
             {
                 'id': friend_request.id,
@@ -106,15 +106,19 @@ class User < ApplicationRecord
     end
 
     def get_friendship_status(user_id)
-        friendship = Friendship.where(requester: id, responder: user_id).or(Friendship.where(requester: user_id, responder: id)).first
-        if friendship.nil?
-            return 'none'
-        elsif friendship.accepted
-            return 'friends'
-        elsif friendship.requester === id
-            return 'sent'
+        if(user_id == self.id) 
+            return { 'status': 'self', 'id': nil}
         else
-            return 'received'
+            friendship = Friendship.where(requester: self.id, responder: user_id).or(Friendship.where(requester: user_id, responder: self.id)).first
+            if friendship.nil?
+                return { 'status': 'not friends', 'id': nil}
+            elsif friendship.accepted
+                return { 'status': 'friends', 'id': friendship.id}
+            elsif friendship.requester.id === self.id
+                return { 'status': 'request sent', 'id': friendship.id}
+            else
+                return { 'status': 'request received', 'id': friendship.id}
+            end
         end
     end
 end

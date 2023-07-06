@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_15_142223) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_30_112952) do
   create_table "daily_words", force: :cascade do |t|
     t.string "word"
     t.datetime "date"
@@ -21,7 +21,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_15_142223) do
   create_table "friendships", force: :cascade do |t|
     t.integer "requester_id"
     t.integer "responder_id"
-    t.boolean "accepted"
+    t.boolean "accepted", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
