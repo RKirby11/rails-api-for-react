@@ -4,7 +4,7 @@ class UsersController < ApplicationController
     before_action :find_user, only: [:show]
 
     def index
-        @users = User.where("user_name like ?", "%#{params[:username]}").where.not(id: @current_user).limit(6)
+        @users = User.where("user_name like ?", "%#{search_param[:query]}%").where.not(id: @current_user).limit(6)
         @users = @users.map do |user| {
             'user_name': user.user_name,
             'avatar_url': user.presigned_avatar_url,
